@@ -1,6 +1,6 @@
 package dev.anli.oligopoly.board.tile;
 
-import dev.anli.oligopoly.Utils;
+import dev.anli.oligopoly.gui.Utils;
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.card.GetOutOfJailFreeCard;
 import dev.anli.oligopoly.board.Money;

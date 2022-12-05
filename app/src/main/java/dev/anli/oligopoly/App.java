@@ -4,9 +4,9 @@
 package dev.anli.oligopoly;
 
 import dev.anli.oligopoly.board.Board;
-import dev.anli.oligopoly.board.Money;
+import dev.anli.oligopoly.gui.BoardSelect;
+import dev.anli.oligopoly.gui.GamePanel;
 import dev.anli.oligopoly.state.Game;
-import dev.anli.oligopoly.state.Items;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;

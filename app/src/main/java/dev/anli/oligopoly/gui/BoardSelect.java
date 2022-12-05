@@ -1,13 +1,10 @@
-package dev.anli.oligopoly;
+package dev.anli.oligopoly.gui;
 
 import dev.anli.oligopoly.board.Board;
-import dev.anli.oligopoly.board.Money;
 import dev.anli.oligopoly.state.Game;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;

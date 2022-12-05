@@ -1,6 +1,6 @@
 package dev.anli.oligopoly.board.card;
 
-import dev.anli.oligopoly.Utils;
+import dev.anli.oligopoly.gui.Utils;
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.Item;
 import dev.anli.oligopoly.state.Game;

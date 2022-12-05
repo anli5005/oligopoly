@@ -1,4 +1,4 @@
-package dev.anli.oligopoly;
+package dev.anli.oligopoly.gui;
 
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.Item;

@@ -1,4 +1,4 @@
-package dev.anli.oligopoly;
+package dev.anli.oligopoly.gui;
 
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.Item;
@@ -9,8 +9,6 @@ import dev.anli.oligopoly.state.TurnPhase;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.Map;
 

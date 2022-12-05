@@ -1,4 +1,4 @@
-package dev.anli.oligopoly;
+package dev.anli.oligopoly.gui;
 
 import dev.anli.oligopoly.board.card.Card;
 import dev.anli.oligopoly.board.tile.Tile;

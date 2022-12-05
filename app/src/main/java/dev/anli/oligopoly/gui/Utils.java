@@ -1,4 +1,4 @@
-package dev.anli.oligopoly;
+package dev.anli.oligopoly.gui;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
