@@ -7,6 +7,10 @@ import dev.anli.oligopoly.state.Items;
 import javax.annotation.Nonnull;
 import java.awt.*;
 
+/**
+ * A tile that provides a reward when it is passed over or landed on.
+ * @param reward reward to grant on passing or landing
+ */
 public record GoTile(Items reward) implements Tile {
     @Override
     public void onPass(@Nonnull Game game) {

@@ -10,6 +10,11 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A tile on which players draw a card after landing on it.
+ * @param name display name of the tile (e.g. "Chance" or "Community Chest")
+ * @param cards list of cards to randomly draw from
+ */
 public record CardTile(String name, List<Card> cards) implements Tile {
     @Nonnull
     @Override

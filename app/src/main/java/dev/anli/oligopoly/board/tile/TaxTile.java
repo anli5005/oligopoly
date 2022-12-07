@@ -10,6 +10,11 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A tile that levies a tax when it is landed on.
+ * @param name display name of the tile
+ * @param tax items to take from the player
+ */
 public record TaxTile(String name, Items tax) implements Tile {
     @Nonnull
     @Override

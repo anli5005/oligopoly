@@ -8,23 +8,30 @@ import dev.anli.oligopoly.state.Player;
 import dev.anli.oligopoly.state.PropertyState;
 
 import javax.annotation.Nonnull;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A typical Monopoly property representing a street.
+ * @param name name of the property
+ * @param category category of the property
+ * @param buyPrice price of the property
+ * @param mortgagePrice mortgage value of the property
+ * @param housePrice price to build a house on the property
+ * @param baseRent base rent charged (doubled if the player owns all the properties in its category)
+ * @param houseRent list of rents corresponding to number of houses built, starting at 1 house
+ * @param hotelRent rent charged when a hotel is present
  */
 public record StreetProperty(
-    String name,
-    PropertyCategory category,
-    Items buyPrice,
-    Items mortgagePrice,
-    Items housePrice,
-    Items hotelPrice,
-    Items baseRent,
-    List<Items> houseRent,
-    Items hotelRent
+    @Nonnull String name,
+    @Nonnull PropertyCategory category,
+    @Nonnull Items buyPrice,
+    @Nonnull Items mortgagePrice,
+    @Nonnull Items housePrice,
+    @Nonnull Items hotelPrice,
+    @Nonnull Items baseRent,
+    @Nonnull List<Items> houseRent,
+    @Nonnull Items hotelRent
 ) implements Property {
     /**
      * Convenience initializer for a street property.

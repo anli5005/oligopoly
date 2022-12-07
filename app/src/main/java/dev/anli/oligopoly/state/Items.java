@@ -2,17 +2,22 @@ package dev.anli.oligopoly.state;
 
 import dev.anli.oligopoly.board.Board;
 import dev.anli.oligopoly.board.Item;
+import dev.anli.oligopoly.io.Deserializer;
+import dev.anli.oligopoly.io.Serializable;
+import dev.anli.oligopoly.io.Serializer;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a collection of item IDs, with possibly multiple copies of each. Note that it is
  * possible to have a negative amount of items (say, in case someone overdraws.)
  */
-public final class Items {
+public final class Items implements Serializable {
     /**
      * Underlying map. At no point should this map contain a null value or 0.
      */
@@ -32,7 +37,7 @@ public final class Items {
      */
     public Items(@Nonnull String itemId, int quantity) {
         this();
-        add(itemId, quantity);
+        set(itemId, quantity);
     }
 
     /**
@@ -128,7 +133,9 @@ public final class Items {
      * @param other items to add
      */
     public void add(@Nonnull Items other) {
-        other.toMap().forEach(this::add);
+        // We create a new map to avoid ConcurrentModificationExceptions
+        Map<String, Integer> map = new HashMap<>(other.toMap());
+        map.forEach(this::add);
     }
 
     /**
@@ -136,7 +143,8 @@ public final class Items {
      * @param other items to subtract
      */
     public void subtract(@Nonnull Items other) {
-        other.toMap().forEach((item, quantity) -> add(item, -quantity));
+        Map<String, Integer> map = new HashMap<>(other.toMap());
+        map.forEach((item, quantity) -> add(item, -quantity));
     }
 
     /**
@@ -190,6 +198,8 @@ public final class Items {
 
     /**
      * Returns a sorted array of entries for each item and quantity.
+     * <p>
+     * Items are sorted first by order, then by their IDs.
      */
     @SuppressWarnings("unchecked")
     public Map.Entry<String, Integer>[] toEntryArray(Board board) {
@@ -204,5 +214,27 @@ public final class Items {
 
             return a.getKey().compareTo(b.getKey());
         }).toList().toArray(new Map.Entry[] {});
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.accept(map.size());
+        serializer.acceptAll(toMap().entrySet().stream()
+            .flatMap(entry -> Stream.of(entry.getKey(), entry.getValue().toString()))
+            .toList());
+    }
+
+    /**
+     * Deserializes items with the given deserializer.
+     */
+    public static Items deserialize(Deserializer deserializer) throws IOException {
+        int size = deserializer.readInt();
+        Items items = new Items();
+        for (int i = 0; i < size; i++) {
+            String item = deserializer.readLine();
+            int quantity = deserializer.readInt();
+            items.set(item, quantity);
+        }
+        return items;
     }
 }

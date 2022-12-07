@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public record GoToPropertyCard(
-    String propertyId, String title, String description
+    @Nonnull String propertyId, @Nonnull String title, @Nonnull String description
 ) implements Card {
 
     @Nonnull

@@ -18,12 +18,6 @@ import java.util.Optional;
  * A property in the game.
  */
 public interface Property extends Item {
-    /**
-     * Returns the name of the property.
-     * @return name of the property
-     */
-    @Nonnull String getName();
-
     @Nonnull
     @Override
     default String getItemDescription(@Nonnull String id, @Nonnull Game game) {
@@ -39,8 +33,8 @@ public interface Property extends Item {
     default List<Action> getItemActions(@Nonnull String id, @Nonnull Game game) {
         PropertyState state = game.getPropertyState(id);
         return List.of(
-            state.mortgageAction(this),
-            state.unmortgageAction(this)
+            state.mortgageAction(this, game),
+            state.unmortgageAction(this, game)
         );
     }
 

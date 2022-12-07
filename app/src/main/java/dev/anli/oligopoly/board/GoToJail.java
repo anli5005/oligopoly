@@ -30,10 +30,11 @@ public final class GoToJail implements Tile, Card {
     @Nonnull
     @Override
     public List<Action> getTileActions(@Nonnull Game game) {
-        return Collections.singletonList(Action.make("Accept Fate", () -> {
-            game.getCurrentPlayer().sendToJail(game.getBoard());
-            game.endTurn();
-        }));
+        if (game.isPostMove()) {
+            return getCardActions(game);
+        } else {
+            return Tile.super.getTileActions(game);
+        }
     }
 
     @Override
@@ -71,6 +72,9 @@ public final class GoToJail implements Tile, Card {
     @Nonnull
     @Override
     public List<Action> getCardActions(@Nonnull Game game) {
-        return getTileActions(game);
+        return Collections.singletonList(Action.make("Accept Fate", () -> {
+            game.getCurrentPlayer().sendToJail(game.getBoard());
+            game.endTurn();
+        }));
     }
 }

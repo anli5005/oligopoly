@@ -37,7 +37,7 @@ public final class GetOutOfJailFreeCard implements OwnableCard {
     @Nonnull
     @Override
     public String getCardDescription() {
-        return "Use this card to get out of jail for free. You can trade this card.";
+        return "Use this card to get out of jail for free.";
     }
 
     @Override

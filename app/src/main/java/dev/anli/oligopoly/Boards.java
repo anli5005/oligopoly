@@ -2,6 +2,8 @@ package dev.anli.oligopoly;
 
 import dev.anli.oligopoly.board.*;
 import dev.anli.oligopoly.board.card.*;
+import dev.anli.oligopoly.board.Action;
+import dev.anli.oligopoly.board.debug.DebugItem;
 import dev.anli.oligopoly.board.property.*;
 import dev.anli.oligopoly.board.tile.*;
 import dev.anli.oligopoly.state.Game;
@@ -18,6 +20,9 @@ public class Boards {
         // This is purely a container for the getBoards() method.
     }
 
+    /**
+     * Typical Oligopoly board.
+     */
     private static Board getStandardBoard() {
         Card bookstoreCard = new GoToPropertyCard(
             "BLUE_2",
@@ -34,7 +39,8 @@ public class Boards {
             ClippyCard.getInstance(),
             InstantHotelCard.getInstance(),
             GoToJail.getInstance(),
-            bookstoreCard
+            bookstoreCard,
+            SkipCard.getInstance()
         );
 
         List<Card> chance = List.of(
@@ -44,7 +50,8 @@ public class Boards {
             ClippyCard.getInstance(),
             InstantHotelCard.getInstance(),
             GoToJail.getInstance(),
-            bookstoreCard
+            bookstoreCard,
+            SkipCard.getInstance()
         );
 
         Map<String, Item> items = new HashMap<>(Map.of(
@@ -53,8 +60,10 @@ public class Boards {
             StealCard.getInstance().getId(), StealCard.getInstance(),
             KillCard.getInstance().getId(), KillCard.getInstance(),
             InstantHotelCard.getInstance().getId(), InstantHotelCard.getInstance(),
+            SkipCard.getInstance().getId(), SkipCard.getInstance(),
             House.ID, House.getInstance(),
-            Hotel.ID, Hotel.getInstance()
+            Hotel.ID, Hotel.getInstance(),
+            DebugItem.ID, DebugItem.getInstance()
         ));
 
         PropertyCategory brown = new PropertyCategory("Brown", 0, 99, 51, 18);
@@ -238,18 +247,22 @@ public class Boards {
         return new Board("Standard", tiles, items, Money.of(1500));
     }
 
-    private static Board getFriendshipEndingBoard() {
+    /**
+     * Board where players fight for control over a single property.
+     */
+    private static Board getKingOfTheHillBoard() {
         Map<String, Item> items = new HashMap<>(Map.of(
             Money.ID, Money.getInstance(),
             GetOutOfJailFreeCard.ID, GetOutOfJailFreeCard.getInstance(),
             House.ID, House.getInstance(),
             Hotel.ID, Hotel.getInstance(),
             "PROPERTY", new StreetProperty(
-                "Sanity",
+                "The Hill",
                 new PropertyCategory("Good Luck", 0, 255, 0, 0),
-                10, -9999, 1, 1,
+                10, -9000, 1, 1,
                 2000, 3000, 4000, 5000, 6000, 7000
-            )
+            ),
+            DebugItem.ID, DebugItem.getInstance()
         ));
 
         List<Tile> tiles = new ArrayList<>();
@@ -290,9 +303,12 @@ public class Boards {
         }
         tiles.set(0, new JailTile());
 
-        return new Board("Hate Your Fellow TAs?", tiles, items, Money.of(1500));
+        return new Board("King of the Hill", tiles, items, Money.of(1500));
     }
 
+    /**
+     * Board that abandons the monetary system entirely.
+     */
     private static Board getDeathmatchBoard() {
         Map<String, Item> items = new HashMap<>(Map.of(
             KillCard.getInstance().getId(), KillCard.getInstance(),
@@ -304,13 +320,13 @@ public class Boards {
 
                 @Override
                 public String getIconText() {
-                    return "PI";
+                    return "EM";
                 }
 
                 @Nonnull
                 @Override
                 public String getTitle() {
-                    return "Private Investigator";
+                    return "Emergency Meeting";
                 }
 
                 @Nonnull
@@ -349,7 +365,8 @@ public class Boards {
                         }
                     });
                 }
-            }
+            },
+            DebugItem.ID, DebugItem.getInstance()
         ));
 
         List<Tile> tiles = new ArrayList<>();
@@ -366,16 +383,18 @@ public class Boards {
             }
         }
 
-        return new Board("Deathmatch", tiles, items, new Items("ANTI_KILL", 1));
+        return new Board(
+            "Deathmatch", tiles, items, new Items("ANTI_KILL", 1)
+        );
     }
 
     /**
-     * Gets a list of boards.
+     * Gets the list of available boards.
      */
     public static List<Board> getBoards() {
         return List.of(
             getStandardBoard(),
-            getFriendshipEndingBoard(),
+            getKingOfTheHillBoard(),
             getDeathmatchBoard()
         );
     }

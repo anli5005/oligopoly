@@ -18,6 +18,12 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * A tile that represents a property.
+ * <p>
+ * Technically, multiple tiles per property can exist on a single board.
+ * @param itemId ID of the property on the board
+ */
 public record PropertyTile(String itemId) implements Tile {
     @Nullable
     public Property getProperty(@Nonnull Game game) {
@@ -35,10 +41,6 @@ public record PropertyTile(String itemId) implements Tile {
         }
 
         return game.getPropertyState(itemId);
-    }
-
-    public class RentAction {
-
     }
 
     private static Action rentAction(Player owner, Items rent, Game game) {

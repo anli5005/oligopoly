@@ -3,6 +3,8 @@ package dev.anli.oligopoly.gui;
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.Item;
 import dev.anli.oligopoly.board.Money;
+import dev.anli.oligopoly.board.UnknownItem;
+import dev.anli.oligopoly.board.tile.PropertyTile;
 import dev.anli.oligopoly.state.Game;
 import dev.anli.oligopoly.state.TurnPhase;
 
@@ -12,6 +14,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Map;
 
+/**
+ * Controller that displays a game.
+ */
 public class GamePanel extends JPanel {
     private final Game game;
     private final JLabel statusLabel;
@@ -21,17 +26,44 @@ public class GamePanel extends JPanel {
     private ItemDetailPanel detailPanel = null;
     private final JPanel actionPanel;
 
-    public GamePanel(@Nonnull Game game) {
+    /**
+     * Constructs a GamePanel.
+     * @param game game to manage and display
+     * @param quit callback to quit the game and delete the save
+     * @param showInstructions callback to show instructions
+     */
+    public GamePanel(
+        @Nonnull Game game,
+        @Nonnull Runnable quit,
+        @Nonnull Runnable showInstructions
+    ) {
         this.game = game;
 
         setBorder(new EmptyBorder(16, 16, 8, 16));
         setLayout(new BorderLayout());
 
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setBorder(new EmptyBorder(0, 0, 5, 0));
+        JButton quitButton = new JButton("End Game");
+        quitButton.addActionListener(e -> quit.run());
+        headerPanel.add(quitButton, BorderLayout.LINE_START);
         statusLabel = new JLabel("Starting game...", SwingConstants.CENTER);
-        add(statusLabel, BorderLayout.PAGE_START);
+        headerPanel.add(statusLabel, BorderLayout.CENTER);
+        JButton instructionsButton = new JButton("How to Play");
+        instructionsButton.addActionListener(e -> showInstructions.run());
+        headerPanel.add(instructionsButton, BorderLayout.LINE_END);
+        add(headerPanel, BorderLayout.PAGE_START);
 
         JPanel boardContainer = new JPanel();
-        BoardComponent boardComponent = new BoardComponent(game);
+        BoardComponent boardComponent = new BoardComponent(game, tile -> {
+            if (tile instanceof PropertyTile propertyTile) {
+                selectedItemId = propertyTile.itemId();
+            } else {
+                selectedItemId = null;
+            }
+            updatePanel();
+        });
         boardContainer.add(boardComponent);
         add(boardContainer, BorderLayout.CENTER);
 
@@ -76,13 +108,12 @@ public class GamePanel extends JPanel {
         add(actionPanel, BorderLayout.PAGE_END);
 
         updatePanel();
-        addHintText();
     }
 
     public void updatePanel() {
         String statusItemId = Money.ID;
         Item statusItem = game.getBoard().getItem(statusItemId);
-        if (statusItem == null || game.getTurnPhase() == TurnPhase.START) {
+        if (statusItem instanceof UnknownItem || game.getTurnPhase() == TurnPhase.START) {
             statusLabel.setText(String.format(
                 "Player %d • Turn %d",
                 game.getCurrentPlayer().getNumber() + 1,
@@ -121,14 +152,12 @@ public class GamePanel extends JPanel {
             );
         }
 
-        if (selectedItemId == null && detailPanel != null) {
+        if (selectedItemId == null) {
             detailPanel = null;
             detailContainer.removeAll();
             addHintText();
         } else if (
-            selectedItemId != null && (
-                detailPanel == null || !selectedItemId.equals(detailPanel.getItemId())
-            )
+            detailPanel == null || !selectedItemId.equals(detailPanel.getItemId())
         ) {
             detailContainer.removeAll();
             detailPanel = new ItemDetailPanel(selectedItemId, game, this::updatePanel);
@@ -142,6 +171,10 @@ public class GamePanel extends JPanel {
     }
 
     private void addHintText() {
-        detailContainer.add(new JLabel("Select an item or property for more info."));
+        detailContainer.add(new JLabel(
+            game.getTurnPhase() == TurnPhase.START ?
+                "Start the turn by clicking on Start Turn." :
+                "Select an item or property on the board for more info."
+        ));
     }
 }

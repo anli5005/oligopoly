@@ -1,6 +1,5 @@
 package dev.anli.oligopoly.board.property;
 
-import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.state.Game;
 import dev.anli.oligopoly.state.Items;
 import dev.anli.oligopoly.state.Player;
@@ -8,20 +7,23 @@ import dev.anli.oligopoly.state.PropertyState;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * A property representing a utility.
+ * A property representing a railroad.
+ * @param name name of the property
+ * @param buyPrice price of the property
+ * @param mortgagePrice mortgage value of the property
+ * @param rent list of rents, corresponding to number of railroads owned (starting at 1)
  */
 public record RailroadProperty(
-    String name,
-    Items buyPrice,
-    Items mortgagePrice,
-    List<Items> rent
+    @Nonnull String name,
+    @Nonnull Items buyPrice,
+    @Nonnull Items mortgagePrice,
+    @Nonnull List<Items> rent
 ) implements Property {
     /**
-     * The category for all utilities.
+     * The category for all railroads.
      */
     public static final PropertyCategory CATEGORY = new PropertyCategory(
         "Railroad", 998, 0, 0, 0

@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * A jail tile.
+ * @param fine fine required to get out of jail
+ * @param getOutOfJailFree required items to use "Get out of Jail Free"
  */
 public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
     /**

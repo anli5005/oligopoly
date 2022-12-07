@@ -2,14 +2,18 @@ package dev.anli.oligopoly.state;
 
 import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.property.Property;
+import dev.anli.oligopoly.io.Deserializer;
+import dev.anli.oligopoly.io.Serializable;
+import dev.anli.oligopoly.io.Serializer;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
  * State of a given property.
  */
-public class PropertyState {
+public class PropertyState implements Serializable {
     private boolean isMortgaged;
     private final Items items;
 
@@ -79,7 +83,7 @@ public class PropertyState {
      * Returns an action to mortgage the property.
      */
     @Nonnull
-    public Action mortgageAction(@Nonnull Property property) {
+    public Action mortgageAction(@Nonnull Property property, @Nonnull Game game) {
         return new Action() {
             @Nonnull
             @Override
@@ -95,7 +99,9 @@ public class PropertyState {
 
             @Override
             public boolean isAllowed() {
-                return !isMortgaged() && items.isEmpty();
+                return !isMortgaged() &&
+                    items.isEmpty() &&
+                    game.getCurrentPlayer().getItems().has(getCost());
             }
 
             @Override
@@ -109,7 +115,7 @@ public class PropertyState {
      * Returns an action to unmortgage the property.
      */
     @Nonnull
-    public Action unmortgageAction(@Nonnull Property property) {
+    public Action unmortgageAction(@Nonnull Property property, @Nonnull Game game) {
         return new Action() {
             @Nonnull
             @Override
@@ -125,7 +131,7 @@ public class PropertyState {
 
             @Override
             public boolean isAllowed() {
-                return isMortgaged();
+                return isMortgaged() && game.getCurrentPlayer().getItems().has(getCost());
             }
 
             @Override
@@ -133,5 +139,20 @@ public class PropertyState {
                 setMortgaged(false);
             }
         };
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.accept(isMortgaged);
+        serializer.accept(items);
+    }
+
+    /**
+     * Deserializes a property state with the given deserializer.
+     */
+    public static PropertyState deserialize(Deserializer deserializer) throws IOException {
+        boolean isMortgaged = deserializer.readBoolean();
+        Items items = Items.deserialize(deserializer);
+        return new PropertyState(isMortgaged, items);
     }
 }

@@ -5,11 +5,15 @@ import dev.anli.oligopoly.board.Item;
 import dev.anli.oligopoly.state.Game;
 import dev.anli.oligopoly.state.TurnPhase;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Panel that displays information about an item and allows the user to take actions.
+ */
 public class ItemDetailPanel extends JPanel {
     private final String itemId;
     private final Game game;
@@ -18,6 +22,9 @@ public class ItemDetailPanel extends JPanel {
     private final JPanel actionsPanel;
     private final Runnable triggerRootUpdate;
 
+    /**
+     * Gets the item ID displayed by this detail panel.
+     */
     public String getItemId() {
         return itemId;
     }
@@ -26,7 +33,17 @@ public class ItemDetailPanel extends JPanel {
         return game.getBoard().getItem(itemId);
     }
 
-    public ItemDetailPanel(String itemId, Game game, Runnable triggerRootUpdate) {
+    /**
+     * Constructs an item detail panel.
+     * @param itemId item ID to inspect
+     * @param game current game
+     * @param triggerRootUpdate callback to trigger an update of the entire game view
+     */
+    public ItemDetailPanel(
+        @Nonnull String itemId,
+        @Nonnull Game game,
+        @Nonnull Runnable triggerRootUpdate
+    ) {
         this.itemId = itemId;
         this.game = game;
         this.triggerRootUpdate = triggerRootUpdate;

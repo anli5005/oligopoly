@@ -12,6 +12,11 @@ import java.util.List;
 
 /**
  * A property representing a utility.
+ * @param name name of the property
+ * @param buyPrice price of the property
+ * @param mortgagePrice mortgage value of the property
+ * @param baseRent base multiplier for rent
+ * @param monopolyRent multiplier for rent when all utilities are owned
  */
 public record UtilityProperty(
     String name,

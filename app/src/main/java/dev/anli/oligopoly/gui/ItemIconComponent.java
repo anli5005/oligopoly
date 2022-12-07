@@ -3,27 +3,51 @@ package dev.anli.oligopoly.gui;
 import dev.anli.oligopoly.board.Item;
 import dev.anli.oligopoly.state.Game;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
 /**
- * A component that renders an item's icon.
+ * A view that renders an item's icon.
+ * <p>
+ * Comes in two forms: "small" (scaled down 2x) and "large." Also doubles as a
+ * {@link ListCellRenderer} for use with {@link JList} components.
  */
 public class ItemIconComponent
     extends JComponent
     implements ListCellRenderer<Map.Entry<String, Integer>> {
     private String itemId;
     private int quantity;
-    private Game game;
+    private final Game game;
     private final boolean isSmall;
     private final boolean showQuantity;
 
+    /**
+     * Border width to use in large form.
+     */
     public static int BORDER_WIDTH = 2;
+
+    /**
+     * Border width to use in small form.
+     */
     public static int SMALL_BORDER_WIDTH = 1;
 
+    /**
+     * Constructs an ItemIconComponent.
+     * @param itemId item ID to display
+     * @param quantity quantity of the item
+     * @param game current game
+     * @param isSmall whether the component displays in small form
+     * @param showQuantity whether to show the quantity on the component
+     */
     public ItemIconComponent(
-        String itemId, int quantity, Game game, boolean isSmall, boolean showQuantity
+        @Nullable String itemId,
+        int quantity,
+        @Nonnull Game game,
+        boolean isSmall,
+        boolean showQuantity
     ) {
         this.itemId = itemId;
         this.quantity = quantity;
@@ -46,15 +70,29 @@ public class ItemIconComponent
         setMaximumSize(getPreferredSize());
     }
 
+    /**
+     * Constructs an ItemIconComponent with a null
+     * @param game current game
+     * @param isSmall whether the component displays in small form
+     * @param showQuantity whether to show quantity on the component
+     */
     public ItemIconComponent(Game game, boolean isSmall, boolean showQuantity) {
         this("", 1, game, isSmall, showQuantity);
     }
 
+    /**
+     * Sets the item ID.
+     * @param id item ID to display
+     */
     public void setItemId(String id) {
         itemId = id;
         repaint();
     }
 
+    /**
+     * Sets the quantity.
+     * @param quantity quantity to display
+     */
     public void setQuantity(int quantity) {
         this.quantity = quantity;
         repaint();

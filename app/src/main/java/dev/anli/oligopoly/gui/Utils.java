@@ -2,21 +2,26 @@ package dev.anli.oligopoly.gui;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.html.CSS;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
-import java.awt.geom.Point2D;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 
+/**
+ * Various drawing-related utility functions.
+ */
 public class Utils {
     private Utils() {
-
+        // Do nothing.
     }
 
+    /**
+     * Creates a {@link DocumentListener} from a runnable that gets executed only when the document
+     * changes.
+     */
     public static DocumentListener changeListener(Runnable onChange) {
         return new DocumentListener() {
             @Override
@@ -36,6 +41,14 @@ public class Utils {
         };
     }
 
+    /**
+     * Draws a centered string with the given bounds, wrapping if needed.
+     * @param text text to draw
+     * @param graphics graphics context to draw into
+     * @param x left X of the text
+     * @param y top Y of the text
+     * @param width maximum width of the text
+     */
     public static void drawStringWrapped(
         String text,
         Graphics2D graphics,

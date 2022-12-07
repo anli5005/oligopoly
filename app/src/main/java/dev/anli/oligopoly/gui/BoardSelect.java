@@ -1,35 +1,52 @@
 package dev.anli.oligopoly.gui;
 
 import dev.anli.oligopoly.board.Board;
+import dev.anli.oligopoly.board.debug.DebugItem;
 import dev.anli.oligopoly.state.Game;
+import dev.anli.oligopoly.state.Items;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * The board selection and game configuration menu.
+ */
 public class BoardSelect extends JPanel {
     private Board board;
-    private JLabel boardLabel;
-    private JButton startButton;
-    private JTextField playersTextField;
-    private final Consumer<Game> onSelect;
+    private final JLabel boardLabel;
+    private final JButton startButton;
+    private final JTextField playersTextField;
 
-    public BoardSelect(List<Board> boards, Consumer<Game> onSelect) {
-        this.onSelect = onSelect;
+    /**
+     * Constructs a board selection menu.
+     * @param boards boards to choose from
+     * @param onSelect callback when a game is started
+     * @param showInstructions callback to show instructions
+     */
+    public BoardSelect(
+        @Nonnull List<Board> boards,
+        @Nonnull Consumer<Game> onSelect,
+        @Nonnull Runnable showInstructions
+    ) {
         board = boards.get(0);
 
         setBorder(new EmptyBorder(16, 16, 16, 16));
-        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        setLayout(new BorderLayout());
 
-        JLabel title = new JLabel("Select Board", SwingConstants.CENTER);
-        title.setAlignmentX(CENTER_ALIGNMENT);
-        add(title);
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+        JLabel title = new JLabel("Select Board", SwingConstants.LEADING);
+        headerPanel.add(title, BorderLayout.LINE_START);
+        JButton instructionsButton = new JButton("How to Play");
+        instructionsButton.addActionListener(e -> showInstructions.run());
+        headerPanel.add(instructionsButton, BorderLayout.LINE_END);
+        add(headerPanel, BorderLayout.PAGE_START);
 
-        add(Box.createVerticalStrut(5));
-
-        JPanel grid = new JPanel(new GridLayout(0, 4));
+        JPanel grid = new JPanel(new GridLayout(0, Math.min(boards.size(), 4)));
         boards.forEach(board -> {
             JButton button = new JButton(board.name());
             button.addActionListener(e -> {
@@ -38,14 +55,9 @@ public class BoardSelect extends JPanel {
             });
             grid.add(button);
         });
-        grid.setAlignmentX(CENTER_ALIGNMENT);
-        add(grid);
-
-        add(new Box.Filler(
-            new Dimension(0, 5),
-            new Dimension(0, Short.MAX_VALUE),
-            new Dimension(0, Short.MAX_VALUE)
-        ));
+        grid.setPreferredSize(new Dimension(700, 200));
+        grid.setBorder(new EmptyBorder(50, 0, 50, 0));
+        add(grid, BorderLayout.CENTER);
 
         JPanel bottom = new JPanel();
         bottom.setAlignmentX(CENTER_ALIGNMENT);
@@ -54,6 +66,10 @@ public class BoardSelect extends JPanel {
         boardLabel = new JLabel();
         bottom.add(boardLabel);
 
+        bottom.add(Box.createHorizontalStrut(10));
+
+        JCheckBox debugMode = new JCheckBox("<html><s>Cheating</s> Debug Mode?</html>");
+        bottom.add(debugMode);
         bottom.add(Box.createHorizontalGlue());
         bottom.add(Box.createHorizontalStrut(10));
 
@@ -67,13 +83,18 @@ public class BoardSelect extends JPanel {
         bottom.add(Box.createHorizontalStrut(10));
 
         startButton = new JButton("Start");
-        startButton.addActionListener(e -> onSelect.accept(
-            new Game(board, Integer.parseInt(playersTextField.getText()))
-        ));
+        startButton.addActionListener(e -> {
+            int players = Integer.parseInt(playersTextField.getText());
+            Items startingItems = new Items(board.startItems());
+            if (debugMode.isSelected()) {
+                startingItems.add(DebugItem.ID, 1);
+            }
+            onSelect.accept(new Game(board, players, startingItems));
+        });
         startButton.setDefaultCapable(true);
         bottom.add(startButton);
 
-        add(bottom);
+        add(bottom, BorderLayout.PAGE_END);
 
         updatePanel();
     }

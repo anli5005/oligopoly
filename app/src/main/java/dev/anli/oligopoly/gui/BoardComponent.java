@@ -4,34 +4,117 @@ import dev.anli.oligopoly.board.card.Card;
 import dev.anli.oligopoly.board.tile.Tile;
 import dev.anli.oligopoly.state.Game;
 import dev.anli.oligopoly.state.Player;
+import dev.anli.oligopoly.state.TurnPhase;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
+/**
+ * A view that draws the board on screen.
+ */
 public class BoardComponent extends JComponent {
-    private Game game;
+    private final Game game;
 
+    /**
+     * The border width applied to tiles and the board.
+     */
     public static final int BORDER_WIDTH = 2;
 
+    /**
+     * The number of side tiles per side.
+     */
     public static final int TILES_PER_SIDE = 9;
 
+    /**
+     * Calculates the size of the board.
+     */
     public static Dimension calculateSize() {
         int totalSize = TILES_PER_SIDE * Tile.SIDE_TILE_SIZE.width + 2 * Tile.SIDE_TILE_SIZE.height;
         totalSize += (TILES_PER_SIDE + 3) * BORDER_WIDTH;
         return new Dimension(totalSize, totalSize);
     }
 
-    public BoardComponent(Game game) {
+    /**
+     * Constructs a BoardComponent.
+     * @param game game to draw
+     * @param tileClickHandler function called when tiles are clicked
+     */
+    public BoardComponent(@Nonnull Game game, @Nonnull Consumer<Tile> tileClickHandler) {
         this.game = game;
 
         Dimension size = calculateSize();
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                getTileAtPosition(e.getPoint()).ifPresent(tileClickHandler);
+            }
+        });
+    }
+
+    private OptionalInt getLocationByOffset(double offset, int startPoint) {
+        double subOffset = offset - Tile.SIDE_TILE_SIZE.height;
+        int tileSize = Tile.SIDE_TILE_SIZE.width + BORDER_WIDTH;
+        double index = Math.min(subOffset / tileSize, TILES_PER_SIDE);
+
+        if (index < 0) {
+            return OptionalInt.of(startPoint);
+        } else if (subOffset - Math.floor(index) * tileSize >= BORDER_WIDTH) {
+            return OptionalInt.of((int) index + startPoint + 1);
+        }
+
+        return OptionalInt.empty();
+    }
+
+    private OptionalInt getLocationAtPosition(Point point) {
+        double topDist = point.getY();
+        double leftDist = point.getX();
+        double rightDist = getSize().getWidth() - point.getX();
+        double bottomDist = getSize().getHeight() - point.getY();
+
+        int sideHeight = Tile.SIDE_TILE_SIZE.height + BORDER_WIDTH * 2;
+
+        if (topDist <= sideHeight) {
+            return getLocationByOffset(leftDist, TILES_PER_SIDE + 1);
+        }
+
+        if (leftDist <= sideHeight) {
+            return getLocationByOffset(bottomDist, 0);
+        }
+
+        if (rightDist <= sideHeight) {
+            return getLocationByOffset(topDist, 2 * (TILES_PER_SIDE + 1));
+        }
+
+        if (bottomDist <= sideHeight) {
+            return getLocationByOffset(rightDist, 3 * (TILES_PER_SIDE + 1));
+        }
+
+        return OptionalInt.empty();
+    }
+
+    private Optional<Tile> getTileAtPosition(Point point) {
+        OptionalInt locationOptional = getLocationAtPosition(point);
+        if (locationOptional.isPresent()) {
+            int location = locationOptional.getAsInt();
+            List<Tile> tiles = game.getBoard().tiles();
+            if (location < tiles.size()) {
+                return Optional.of(tiles.get(location));
+            }
+        }
+
+        return Optional.empty();
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -42,8 +125,12 @@ public class BoardComponent extends JComponent {
         Graphics2D graphics = (Graphics2D) g;
         Dimension size = calculateSize();
 
+        // Draw the background.
+
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, size.width, size.height);
+
+        // Draw the borders.
 
         graphics.setStroke(new BasicStroke(BORDER_WIDTH));
         graphics.setColor(Color.BLACK);
@@ -93,7 +180,9 @@ public class BoardComponent extends JComponent {
             );
         }
 
-        {
+        // Draw the Oligopoly title or player win text.
+        if (game.getTurnPhase() == TurnPhase.WINNER) {
+        } else {
             AffineTransform old = graphics.getTransform();
             graphics.rotate(
                 -Math.PI / 4,
@@ -116,6 +205,7 @@ public class BoardComponent extends JComponent {
             graphics.setTransform(old);
         }
 
+        // Find the players on each tile.
         Map<Integer, List<Player>> locationsToPlayers = new HashMap<>();
         game.getPlayers().forEach(player -> {
             if (player.isAlive()) {
@@ -127,8 +217,12 @@ public class BoardComponent extends JComponent {
         });
         int totalPlayers = game.getPlayers().size();
 
+        // Draw each tile.
         List<Tile> tiles = game.getBoard().tiles();
         for (int i = 0; i < Math.min(4 * TILES_PER_SIDE + 4, tiles.size()); i++) {
+            // Create a child graphics context and rotate if needed.
+            // Then ask the tile to draw itself.
+
             Tile tile = tiles.get(i);
             int side = i / (TILES_PER_SIDE + 1);
             int sideIndex = i % (TILES_PER_SIDE + 1);
@@ -164,6 +258,7 @@ public class BoardComponent extends JComponent {
 
             graphics.setTransform(old);
 
+            // Draw the players by finding their location on the tile, then compositing them.
             List<Player> players = locationsToPlayers.getOrDefault(i, Collections.emptyList());
             Map<Point, List<Player>> pointsToPlayers = new HashMap<>();
             players.forEach(player -> {
@@ -240,6 +335,7 @@ public class BoardComponent extends JComponent {
             });
         }
 
+        // Draw the dice.
         List<List<Integer>> rolls = game.getDiceRolls();
         if (!rolls.isEmpty()) {
             List<Integer> roll = rolls.get(rolls.size() - 1);
@@ -264,6 +360,7 @@ public class BoardComponent extends JComponent {
             graphics.setFont(oldFont);
         }
 
+        // Draw the card if one is being presented.
         Card card = game.getCurrentCard();
         if (card != null) {
             AffineTransform old = graphics.getTransform();

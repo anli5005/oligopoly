@@ -14,7 +14,7 @@ public record UnknownItem(String id) implements Item {
 
     @Override
     public int getOrder() {
-        return Integer.MAX_VALUE;
+        return 100000;
     }
 
     @Override

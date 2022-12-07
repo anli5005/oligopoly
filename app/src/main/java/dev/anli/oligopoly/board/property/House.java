@@ -1,6 +1,7 @@
 package dev.anli.oligopoly.board.property;
 
 import dev.anli.oligopoly.board.Item;
+import dev.anli.oligopoly.state.Game;
 
 import javax.annotation.Nonnull;
 
@@ -15,6 +16,13 @@ public final class House implements Item {
 
     private House() {
         // Do nothing.
+    }
+
+    @Nonnull
+    @Override
+    public String getItemDescription(@Nonnull String id, @Nonnull Game game) {
+        return "Congratulations, you've broken the game! No, you can't place these on the board " +
+            "to celebrate.";
     }
 
     private static final House instance = new House();

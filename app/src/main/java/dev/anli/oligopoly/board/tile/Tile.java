@@ -73,6 +73,8 @@ public interface Tile {
 
     /**
      * Gets the recommended location to draw a given player on the tile as a side tile.
+     * @param player player to place
+     * @param game current game
      */
     default Point suggestSidePlayerLocation(@Nonnull Player player, @Nonnull Game game) {
         return new Point(Tile.SIDE_TILE_SIZE.width / 2, Tile.SIDE_TILE_SIZE.height / 2);
@@ -80,6 +82,8 @@ public interface Tile {
 
     /**
      * Gets the recommended location to draw a given player on the tile as a corner tile.
+     * @param player player to place
+     * @param game current game
      */
     default Point suggestCornerPlayerLocation(@Nonnull Player player, @Nonnull Game game) {
         return new Point(Tile.SIDE_TILE_SIZE.height / 2, Tile.SIDE_TILE_SIZE.height / 2);

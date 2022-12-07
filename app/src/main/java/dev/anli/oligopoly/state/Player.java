@@ -4,15 +4,22 @@ import dev.anli.oligopoly.board.*;
 import dev.anli.oligopoly.board.property.Property;
 import dev.anli.oligopoly.board.property.PropertyCategory;
 import dev.anli.oligopoly.board.tile.JailTile;
+import dev.anli.oligopoly.io.Deserializer;
+import dev.anli.oligopoly.io.Serializable;
+import dev.anli.oligopoly.io.Serializer;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalInt;
+import java.util.stream.Stream;
 
 /**
  * A player in the game.
  */
-public class Player {
+public class Player implements Serializable {
     private final int number;
     private final Items items;
     private int location = 0;
@@ -183,5 +190,39 @@ public class Player {
     public Color getColor(int numPlayers) {
         float hue = getNumber() / ((float) numPlayers);
         return Color.getHSBColor(hue, 1, 0.8F);
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.accept(number);
+        serializer.accept(items);
+        serializer.accept(location);
+        serializer.accept(turnsInJail);
+        serializer.accept(isAlive);
+        serializer.accept(lastCreditor);
+    }
+
+    /**
+     * Deserializes a player with the given deserializer.
+     * @throws IOException if there was an error or if the data was invalid
+     */
+    public static Player deserialize(Deserializer deserializer) throws IOException {
+        int number = deserializer.readInt();
+        Items items = Items.deserialize(deserializer);
+        int location = deserializer.readInt();
+        int turnsInJail = deserializer.readInt();
+        boolean isAlive = deserializer.readBoolean();
+        int lastCreditor = deserializer.readInt();
+
+        if (turnsInJail < -1) {
+            throw new IOException("Invalid turns in jail");
+        }
+
+        Player player = new Player(number, items);
+        player.setLocation(location);
+        player.turnsInJail = turnsInJail;
+        player.isAlive = isAlive;
+        player.lastCreditor = lastCreditor;
+        return player;
     }
 }

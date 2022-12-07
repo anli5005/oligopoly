@@ -67,6 +67,12 @@ public interface Action {
         };
     }
 
+    /**
+     * Generates a JButton that allows the current player to perform an action, if allowed.
+     * @param action the action
+     * @param game current game
+     * @param afterRun callback to execute after the action is run (for example, for updating views)
+     */
     static JButton makeButton(Action action, Game game, Runnable afterRun) {
         String title;
         if (action.getCost().isEmpty()) {

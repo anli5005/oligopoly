@@ -2,26 +2,66 @@ package dev.anli.oligopoly.state;
 
 import dev.anli.oligopoly.board.*;
 import dev.anli.oligopoly.board.card.Card;
+import dev.anli.oligopoly.board.Action;
 import dev.anli.oligopoly.board.property.Property;
 import dev.anli.oligopoly.board.tile.Tile;
+import dev.anli.oligopoly.io.Deserializer;
+import dev.anli.oligopoly.io.Serializable;
+import dev.anli.oligopoly.io.Serializer;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.sql.Array;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * An Oligopoly game and its state.
  */
-public class Game {
+public class Game implements Serializable {
     private final Board board;
-    private final List<Player> players = new ArrayList<>();
-    private final List<Trade> trades = new ArrayList<>();
-    private int currentPlayerNumber = 0;
+    private final List<Player> players;
+    private int currentPlayerNumber;
     private final List<List<Integer>> diceRolls = new ArrayList<>();
     private Card currentCard = null;
     private List<Action> currentActions = Collections.emptyList();
-    private int turns = 0;
+    private int turns;
     private TurnPhase turnPhase = TurnPhase.START;
-    private final Map<String, PropertyState> propertyStates = new HashMap<>();
+    private final Map<String, PropertyState> propertyStates;
+    private Consumer<Game> gameSaver = null;
+
+    private Game(
+        @Nonnull Board board,
+        @Nonnull List<Player> players,
+        int currentPlayerNumber,
+        int turns,
+        Map<String, PropertyState> propertyStates,
+        boolean isComplete
+    ) {
+        this.board = board;
+        this.players = players;
+        this.currentPlayerNumber = currentPlayerNumber;
+        this.turns = turns;
+        this.propertyStates = propertyStates;
+
+        if (isComplete) {
+            turnPhase = TurnPhase.WINNER;
+        } else {
+            startTurn();
+        }
+    }
+
+    private static List<Player> createPlayers(int numPlayers, Items startingItems) {
+        if (numPlayers <= 0) {
+            throw new IllegalArgumentException("numPlayers must be positive");
+        }
+
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+            players.add(new Player(i, new Items(startingItems)));
+        }
+        return players;
+    }
 
     /**
      * Constructs a Game from the given board with the given number of players and starting items.
@@ -31,17 +71,14 @@ public class Game {
      * @throws IllegalArgumentException if numPlayers <= 0
      */
     public Game(@Nonnull Board board, int numPlayers, @Nonnull Items startingItems) {
-        this.board = board;
-
-        if (numPlayers <= 0) {
-            throw new IllegalArgumentException("numPlayers must be positive");
-        }
-
-        for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player(i, new Items(startingItems)));
-        }
-
-        startTurn();
+        this(
+            board,
+            createPlayers(numPlayers, startingItems),
+            0,
+            0,
+            new HashMap<>(),
+            false
+        );
     }
 
     /**
@@ -67,13 +104,6 @@ public class Game {
      */
     public List<Player> getPlayers() {
         return players;
-    }
-
-    /**
-     * Gets the list of trades.
-     */
-    public List<Trade> getTrades() {
-        return trades;
     }
 
     /**
@@ -146,6 +176,9 @@ public class Game {
         diceRolls.clear();
         turns++;
         getCurrentPlayer().startTurn();
+        if (gameSaver != null) {
+            gameSaver.accept(this);
+        }
     }
 
     /**
@@ -239,7 +272,7 @@ public class Game {
             if (getPlayers().get(candidate).isAlive()) {
                 currentPlayerNumber = candidate;
                 if (alivePlayers == 1L) {
-                    turnPhase = TurnPhase.WINNER;
+                    declareWinner();
                 } else {
                     startTurn();
                 }
@@ -249,7 +282,15 @@ public class Game {
 
         // If we get to this point, everyone's dead. Oh well, just declare the current player to be
         // the victor.
+        declareWinner();
+    }
+
+    /**
+     * Declares the current player as the victor.
+     */
+    public void declareWinner() {
         turnPhase = TurnPhase.WINNER;
+        gameSaver.accept(this);
     }
 
     /**
@@ -265,7 +306,7 @@ public class Game {
             return moveAction();
         }
 
-        return Action.make("End turn", this::endTurn);
+        return Action.make("End Turn", this::endTurn);
     }
 
     /**
@@ -343,5 +384,67 @@ public class Game {
         } else {
             throw new IllegalArgumentException("ID is not a property");
         }
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.accept(board.name());
+        serializer.accept(players);
+        serializer.accept(currentPlayerNumber);
+        serializer.accept(turns);
+        serializer.accept(propertyStates);
+        serializer.accept(getTurnPhase() == TurnPhase.WINNER);
+    }
+
+    /**
+     * Sets a callback that saves the game at the start of each turn.
+     * @param saver runnable that saves the game
+     */
+    public void setGameSaver(Consumer<Game> saver) {
+        gameSaver = saver;
+    }
+
+    /**
+     * Deserializes a game object and checks for integrity.
+     * @throws IOException if there was an error or if the game object is invalid
+     */
+    public static Game deserialize(Deserializer deserializer, List<Board> boards)
+        throws IOException {
+        String boardName = deserializer.readLine();
+        Board board = boards.stream()
+            .filter(b -> b.name().equals(boardName))
+            .findFirst()
+            .orElseThrow(() -> new IOException("Failed to find board with name"));
+
+        List<Player> players = deserializer.readList(Player::deserialize);
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+
+            if (player.getNumber() != i) {
+                throw new IOException("Invalid player number for position in list");
+            }
+
+            if (player.getLocation() < 0 || player.getLocation() >= board.tiles().size()) {
+                throw new IOException("Illegal location for player");
+            }
+
+            if (player.getLastCreditor() < -1 || player.getLastCreditor() >= players.size()) {
+                throw new IOException("Illegal last creditor for player");
+            }
+        }
+
+        int currentPlayerNumber = deserializer.readInt();
+        if (currentPlayerNumber < 0 || currentPlayerNumber >= players.size()) {
+            throw new IOException("Invalid current player number");
+        }
+
+        int turns = deserializer.readInt();
+
+        Map<String, PropertyState> propertyStates =
+            deserializer.readMap(PropertyState::deserialize);
+
+        boolean isComplete = deserializer.readBoolean();
+
+        return new Game(board, players, currentPlayerNumber, turns, propertyStates, isComplete);
     }
 }
