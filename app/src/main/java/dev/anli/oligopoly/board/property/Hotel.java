@@ -17,13 +17,13 @@ public final class Hotel implements Item {
         // Do nothing.
     }
 
-    private static final Hotel instance = new Hotel();
+    private static final Hotel INSTANCE = new Hotel();
 
     /**
      * Get the singleton instance.
      */
     public static Hotel getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

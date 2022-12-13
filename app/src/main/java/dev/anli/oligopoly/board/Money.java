@@ -20,13 +20,13 @@ public final class Money implements Item {
         // Do nothing.
     }
 
-    private static final Money instance = new Money();
+    private static final Money INSTANCE = new Money();
 
     /**
      * Get the singleton instance.
      */
     public static Money getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

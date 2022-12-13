@@ -13,16 +13,16 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class DebugItem implements Item {
-    public static String ID = "DEBUG";
+    public static final String ID = "DEBUG";
 
     private DebugItem() {
         // Do nothing.
     }
 
-    private static final DebugItem instance = new DebugItem();
+    private static final DebugItem INSTANCE = new DebugItem();
 
     public static DebugItem getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

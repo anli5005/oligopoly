@@ -13,13 +13,13 @@ public final class SkipCard implements OwnableCard {
         // Do nothing.
     }
 
-    private static final SkipCard instance = new SkipCard();
+    private static final SkipCard INSTANCE = new SkipCard();
 
     /**
      * Get the singleton instance.
      */
     public static SkipCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

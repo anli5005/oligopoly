@@ -36,8 +36,8 @@ public record CardTile(String name, List<Card> cards) implements Tile {
 
     @Override
     public void drawSideTile(@Nonnull Graphics2D graphics, @Nonnull Game game) {
-        graphics.setFont(graphics.getFont().deriveFont(8.0F));
+        graphics.setFont(graphics.getFont().deriveFont(9.0F));
         graphics.setColor(Color.BLACK);
-        Utils.drawStringWrapped(name, graphics, 5, 10, Tile.SIDE_TILE_SIZE.width - 10);
+        Utils.drawStringWrapped(name, graphics, 0, 10, SIDE_TILE_SIZE.width);
     }
 }

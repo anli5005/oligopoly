@@ -15,13 +15,13 @@ public final class KillCard implements OwnableCard {
         // Do nothing.
     }
 
-    private static final KillCard instance = new KillCard();
+    private static final KillCard INSTANCE = new KillCard();
 
     /**
      * Get the singleton instance.
      */
     public static KillCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

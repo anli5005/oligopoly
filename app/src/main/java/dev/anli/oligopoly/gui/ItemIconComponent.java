@@ -27,12 +27,12 @@ public class ItemIconComponent
     /**
      * Border width to use in large form.
      */
-    public static int BORDER_WIDTH = 2;
+    public static final int BORDER_WIDTH = 2;
 
     /**
      * Border width to use in small form.
      */
-    public static int SMALL_BORDER_WIDTH = 1;
+    public static final int SMALL_BORDER_WIDTH = 1;
 
     /**
      * Constructs an ItemIconComponent.

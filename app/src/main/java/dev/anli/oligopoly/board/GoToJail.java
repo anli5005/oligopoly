@@ -18,13 +18,13 @@ public final class GoToJail implements Tile, Card {
         // Do nothing.
     }
 
-    private final static GoToJail instance = new GoToJail();
+    private final static GoToJail INSTANCE = new GoToJail();
 
     /**
      * Gets the singleton instance.
      */
     public static GoToJail getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

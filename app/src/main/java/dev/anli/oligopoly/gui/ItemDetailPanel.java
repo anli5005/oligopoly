@@ -74,6 +74,7 @@ public class ItemDetailPanel extends JPanel {
         headerTextPanel.add(titleText);
         descriptionText = new JTextArea();
         descriptionText.setFont(descriptionText.getFont().deriveFont(Font.ITALIC));
+        descriptionText.setDisabledTextColor(Color.BLACK);
         descriptionText.setLineWrap(true);
         descriptionText.setWrapStyleWord(true);
         descriptionText.setEnabled(false);

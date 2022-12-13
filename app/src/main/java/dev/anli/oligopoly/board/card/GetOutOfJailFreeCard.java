@@ -19,13 +19,13 @@ public final class GetOutOfJailFreeCard implements OwnableCard {
         // Do nothing.
     }
 
-    private static final GetOutOfJailFreeCard instance = new GetOutOfJailFreeCard();
+    private static final GetOutOfJailFreeCard INSTANCE = new GetOutOfJailFreeCard();
 
     /**
      * Get the singleton instance.
      */
     public static GetOutOfJailFreeCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

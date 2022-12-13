@@ -19,13 +19,13 @@ public final class InstantHotelCard implements OwnableCard {
         // Do nothing.
     }
 
-    private static final InstantHotelCard instance = new InstantHotelCard();
+    private static final InstantHotelCard INSTANCE = new InstantHotelCard();
 
     /**
      * Get the singleton instance.
      */
     public static InstantHotelCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

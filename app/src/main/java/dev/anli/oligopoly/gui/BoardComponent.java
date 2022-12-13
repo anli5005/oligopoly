@@ -181,7 +181,18 @@ public class BoardComponent extends JComponent {
         }
 
         // Draw the Oligopoly title or player win text.
+        Font font = graphics.getFont();
         if (game.getTurnPhase() == TurnPhase.WINNER) {
+            graphics.setFont(font.deriveFont(Font.BOLD, 64));
+            graphics.setColor(game.getCurrentPlayer().getColor(game.getPlayers().size()));
+            Utils.drawStringWrapped(
+                String.format("Player %d\nwins!", game.getCurrentPlayer().getNumber() + 1),
+                graphics,
+                0,
+                size.height / 2 - 40,
+                size.width
+            );
+            graphics.setFont(font);
         } else {
             AffineTransform old = graphics.getTransform();
             graphics.rotate(
@@ -190,8 +201,7 @@ public class BoardComponent extends JComponent {
                 size.height / 2.0
             );
 
-            Font oldFont = graphics.getFont();
-            graphics.setFont(oldFont.deriveFont(Font.PLAIN, 96));
+            graphics.setFont(font.deriveFont(Font.PLAIN, 96));
             graphics.setColor(Color.LIGHT_GRAY);
             Utils.drawStringWrapped(
                 "OLIGOPOLY",
@@ -200,10 +210,11 @@ public class BoardComponent extends JComponent {
                 size.height / 2 - 60,
                 size.width
             );
-            graphics.setFont(oldFont);
 
             graphics.setTransform(old);
         }
+
+        graphics.setFont(font);
 
         // Find the players on each tile.
         Map<Integer, List<Player>> locationsToPlayers = new HashMap<>();
@@ -314,11 +325,10 @@ public class BoardComponent extends JComponent {
                         (int) playerSize
                     );
 
-                    Font oldFont = graphics.getFont();
                     if (isCurrent) {
-                        graphics.setFont(oldFont.deriveFont(Font.BOLD, 32));
+                        graphics.setFont(font.deriveFont(Font.BOLD, 32));
                     } else {
-                        graphics.setFont(oldFont.deriveFont(Font.PLAIN, 10));
+                        graphics.setFont(font.deriveFont(Font.PLAIN, 10));
                     }
 
                     graphics.setColor(Color.WHITE);
@@ -330,7 +340,7 @@ public class BoardComponent extends JComponent {
                         (int) playerSize
                     );
 
-                    graphics.setFont(oldFont);
+                    graphics.setFont(font);
                 }
             });
         }
@@ -345,8 +355,7 @@ public class BoardComponent extends JComponent {
             int baseY = (size.height - diceSize) / 2;
 
             graphics.setStroke(new BasicStroke(3));
-            Font oldFont = graphics.getFont();
-            graphics.setFont(oldFont.deriveFont(Font.BOLD, 40));
+            graphics.setFont(font.deriveFont(Font.BOLD, 40));
             for (int i = 0; i < 2; i++) {
                 int diceX = baseX + i * (diceSize + diceGap);
                 graphics.setColor(Color.WHITE);
@@ -357,7 +366,7 @@ public class BoardComponent extends JComponent {
                     roll.get(i).toString(), graphics, diceX, baseY + 5, diceSize
                 );
             }
-            graphics.setFont(oldFont);
+            graphics.setFont(font);
         }
 
         // Draw the card if one is being presented.
@@ -381,8 +390,7 @@ public class BoardComponent extends JComponent {
             graphics.setColor(Color.BLACK);
             graphics.drawRect(cardX, cardY, cardWidth, cardHeight);
 
-            Font oldFont = graphics.getFont();
-            graphics.setFont(oldFont.deriveFont(Font.BOLD, 36));
+            graphics.setFont(font.deriveFont(Font.BOLD, 36));
             Utils.drawStringWrapped(
                 card.getTitle(),
                 graphics,
@@ -390,7 +398,7 @@ public class BoardComponent extends JComponent {
                 cardY + 80,
                 cardWidth - 20
             );
-            graphics.setFont(oldFont.deriveFont(Font.PLAIN, 20));
+            graphics.setFont(font.deriveFont(Font.PLAIN, 20));
             Utils.drawStringWrapped(
                 card.getCardDescription(),
                 graphics,
@@ -398,7 +406,7 @@ public class BoardComponent extends JComponent {
                 cardY + 150,
                 cardWidth - 20
             );
-            graphics.setFont(oldFont);
+            graphics.setFont(font);
 
             graphics.setTransform(old);
         }

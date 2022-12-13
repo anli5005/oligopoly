@@ -53,6 +53,7 @@ public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
             @Override
             public void perform() {
                 game.getCurrentPlayer().releaseFromJail();
+                game.clearDiceRolls(); // Prevent failed doubles from affecting moves
                 game.setCurrentActions(Collections.singletonList(game.moveAction()));
             }
         });
@@ -91,6 +92,7 @@ public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
             public void perform() {
                 game.getCurrentPlayer().setLastCreditor(-1);
                 game.getCurrentPlayer().releaseFromJail();
+                game.clearDiceRolls();
                 game.setCurrentActions(Collections.singletonList(game.moveAction()));
             }
         });
@@ -102,7 +104,7 @@ public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
         return actions;
     }
 
-    public static int INNER_SIZE = 60;
+    public static final int INNER_SIZE = 60;
 
     @Nonnull
     @Override
@@ -136,28 +138,28 @@ public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
 
         graphics.rotate(
             -Math.PI / 2,
-            Tile.SIDE_TILE_SIZE.height / 2.0,
-            Tile.SIDE_TILE_SIZE.height / 2.0
+            SIDE_TILE_SIZE.height / 2.0,
+            SIDE_TILE_SIZE.height / 2.0
         );
         Utils.drawStringWrapped(
             "Visiting",
             graphics,
-            Tile.SIDE_TILE_SIZE.height - INNER_SIZE,
+            SIDE_TILE_SIZE.height - INNER_SIZE,
             67,
             INNER_SIZE
         );
 
         graphics.rotate(
             Math.PI / 4,
-            Tile.SIDE_TILE_SIZE.height / 2.0,
-            Tile.SIDE_TILE_SIZE.height / 2.0
+            SIDE_TILE_SIZE.height / 2.0,
+            SIDE_TILE_SIZE.height / 2.0
         );
         Utils.drawStringWrapped(
             "In Jail",
             graphics,
             10,
             20,
-            Tile.SIDE_TILE_SIZE.height - 20
+            SIDE_TILE_SIZE.height - 20
         );
     }
 
@@ -166,7 +168,7 @@ public record JailTile(Items fine, Items getOutOfJailFree) implements Tile {
         if (player.isJailed()) {
             return new Point(INNER_SIZE / 2, INNER_SIZE / 2);
         } else {
-            int coordinate = (INNER_SIZE + Tile.SIDE_TILE_SIZE.height) / 2;
+            int coordinate = (INNER_SIZE + SIDE_TILE_SIZE.height) / 2;
             return new Point(coordinate, coordinate);
         }
     }

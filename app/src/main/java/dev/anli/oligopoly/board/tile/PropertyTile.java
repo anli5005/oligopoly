@@ -146,23 +146,23 @@ public record PropertyTile(String itemId) implements Tile {
         PropertyState propertyState = getPropertyState(game);
         assert propertyState != null;
 
-        int COLOR_HEIGHT = 20;
+        int colorHeight = 20;
 
         PropertyCategory category = property.getCategory();
         graphics.setColor(new Color(category.red(), category.green(), category.blue()));
-        graphics.fillRect(0, 0, SIDE_TILE_SIZE.width, COLOR_HEIGHT);
+        graphics.fillRect(0, 0, SIDE_TILE_SIZE.width, colorHeight);
 
         graphics.setStroke(new BasicStroke(2));
         graphics.setColor(Color.BLACK);
-        graphics.drawLine(0, COLOR_HEIGHT, SIDE_TILE_SIZE.width, COLOR_HEIGHT);
+        graphics.drawLine(0, colorHeight, SIDE_TILE_SIZE.width, colorHeight);
 
-        graphics.setFont(graphics.getFont().deriveFont(8.0F));
+        graphics.setFont(graphics.getFont().deriveFont(9.0F));
         Utils.drawStringWrapped(
             property.getName(),
             graphics,
-            5,
+            0,
             30,
-            Tile.SIDE_TILE_SIZE.width - 10
+            Tile.SIDE_TILE_SIZE.width
         );
         Utils.drawStringWrapped(
             property.getBuyPrice().format(game.getBoard()),
@@ -175,25 +175,25 @@ public record PropertyTile(String itemId) implements Tile {
         graphics.setStroke(new BasicStroke(1));
         if (propertyState.getItems().has(Hotel.ID)) {
             graphics.setColor(Color.RED);
-            graphics.fillRect(15, 5, SIDE_TILE_SIZE.width - 30, COLOR_HEIGHT - 10);
+            graphics.fillRect(15, 5, SIDE_TILE_SIZE.width - 30, colorHeight - 10);
 
             graphics.setColor(Color.BLACK);
-            graphics.drawRect(15, 5, SIDE_TILE_SIZE.width - 30, COLOR_HEIGHT - 10);
+            graphics.drawRect(15, 5, SIDE_TILE_SIZE.width - 30, colorHeight - 10);
         } else if (propertyState.getItems().has(House.ID)) {
-            int HOUSE_WIDTH = 10;
-            int HOUSE_GAP = 4;
+            int houseWidth = 10;
+            int houseGap = 4;
             int houses = propertyState.getItems().get(House.ID);
-            int startX = SIDE_TILE_SIZE.width - houses * HOUSE_WIDTH - (houses - 1) * HOUSE_GAP;
+            int startX = SIDE_TILE_SIZE.width - houses * houseWidth - (houses - 1) * houseGap;
             startX /= 2;
 
             for (int i = 0; i < houses; i++) {
-                int x = startX + i * (HOUSE_WIDTH + HOUSE_GAP);
+                int x = startX + i * (houseWidth + houseGap);
 
                 graphics.setColor(Color.GREEN);
-                graphics.fillRect(x, 5, 10, COLOR_HEIGHT - 10);
+                graphics.fillRect(x, 5, 10, colorHeight - 10);
 
                 graphics.setColor(Color.BLACK);
-                graphics.drawRect(x, 5, 10, COLOR_HEIGHT - 10);
+                graphics.drawRect(x, 5, 10, colorHeight - 10);
             }
         }
     }

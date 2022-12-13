@@ -155,6 +155,13 @@ public class Game implements Serializable {
     }
 
     /**
+     * Clears the list of dice rolls.
+     */
+    public void clearDiceRolls() {
+        diceRolls.clear();
+    }
+
+    /**
      * Returns whether the given dice roll is a double (i.e. all elements are the same.)
      */
     public static boolean isDouble(@Nonnull List<Integer> roll) {
@@ -173,7 +180,6 @@ public class Game implements Serializable {
      */
     public void startTurn() {
         turnPhase = TurnPhase.START;
-        diceRolls.clear();
         turns++;
         getCurrentPlayer().startTurn();
         if (gameSaver != null) {
@@ -257,6 +263,7 @@ public class Game implements Serializable {
     public void endTurn() {
         setCurrentActions(Collections.emptyList());
         setCurrentCard(null);
+        clearDiceRolls();
 
         // Check to see if the player is now bankrupt.
         if (getCurrentPlayer().getItems().hasDebt()) {

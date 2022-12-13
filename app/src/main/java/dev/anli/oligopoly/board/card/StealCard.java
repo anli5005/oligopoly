@@ -17,13 +17,13 @@ public final class StealCard implements OwnableCard {
         // Do nothing.
     }
 
-    private static final StealCard instance = new StealCard();
+    private static final StealCard INSTANCE = new StealCard();
 
     /**
      * Get the singleton instance.
      */
     public static StealCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

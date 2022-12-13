@@ -25,13 +25,13 @@ public final class House implements Item {
             "to celebrate.";
     }
 
-    private static final House instance = new House();
+    private static final House INSTANCE = new House();
 
     /**
      * Get the singleton instance.
      */
     public static House getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

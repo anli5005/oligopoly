@@ -13,13 +13,13 @@ public final class ClippyCard implements Card {
         // Do nothing.
     }
 
-    private static final ClippyCard instance = new ClippyCard();
+    private static final ClippyCard INSTANCE = new ClippyCard();
 
     /**
      * Get the singleton instance.
      */
     public static ClippyCard getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Nonnull

@@ -14,13 +14,13 @@ public final class FreeParkingTile implements Tile {
         // Do nothing.
     }
 
-    private final static FreeParkingTile instance = new FreeParkingTile();
+    private final static FreeParkingTile INSTANCE = new FreeParkingTile();
 
     /**
      * Gets the singleton instance.
      */
     public static FreeParkingTile getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
